@@ -1,0 +1,10 @@
+{
+  "name": "com.varneon.vudon.playerlist",
+  "version": "0.0.1",
+  "description": "",
+  "displayName": "VUdon - Playerlist",
+  "author": {
+    "name": "Varneon",
+    "url": "https://github.com/Varneon"
+  }
+}
