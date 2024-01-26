@@ -2,7 +2,8 @@
     "name": "Varneon.VUdon.Playerlist.Runtime",
     "references": [
         "UdonSharp.Runtime",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Varneon.VUdon.Editors.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
