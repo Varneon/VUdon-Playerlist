@@ -189,6 +189,11 @@ namespace Varneon.VUdon.Playerlist
             texts[0].text = GetFormattedIdText(playerId, player.isMaster, player.isLocal);
             texts[1].text = player.displayName;
 
+            if(Networking.LocalPlayer.playerId <= player.playerId)
+            {
+                texts[3].text = DateTime.UtcNow.ToLocalTime().ToString("ddd, h:mm tt");
+            }
+
             playerData.Add(player.playerId.ToString(), newPlayerListItem.transform);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listRoot);
@@ -241,7 +246,7 @@ namespace Varneon.VUdon.Playerlist
         {
             if(!TryGetPlayerItem(playerId, out Transform playerItem)) { return false; }
 
-            RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(2);
+            RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
 
             GameObject newRoleItem = Instantiate(roleListItem, roleContainer, false);
 
