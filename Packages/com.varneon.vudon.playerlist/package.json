@@ -15,5 +15,6 @@
   "vpmDependencies": {
     "com.vrchat.worlds": ">=3.4.0 <4.0.0",
     "com.varneon.vudon.editors": "0.1.0-alpha.8"
-  }
+  },
+  "description": "Playerlist prefab for VRChat worlds that displays all users in the instance and information about them."
 }
