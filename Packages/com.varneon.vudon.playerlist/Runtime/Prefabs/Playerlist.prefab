@@ -749,6 +749,8 @@ MonoBehaviour:
     type: 3}
   roleListItem: {fileID: 3682407161066094765, guid: 088b43f6db691cf459684d5e093c04c3,
     type: 3}
+  roleListIconItem: {fileID: 6535081722876529872, guid: 6549698efbd8f9f4f801531e24fb0922,
+    type: 3}
   listRoot: {fileID: 6244847136630010244}
   textPlayerCount: {fileID: 6244847136483964817}
   textLocalPlaytime: {fileID: 6244847136361636932}
