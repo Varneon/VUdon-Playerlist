@@ -745,6 +745,7 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6244847135929672442}
   maxPlayerCount: 32
+  windowRoot: {fileID: 6244847135264293020}
   playerListItem: {fileID: 25760757424224293, guid: ffff678e66e059d469ba6f8588891d65,
     type: 3}
   roleListItem: {fileID: 3682407161066094765, guid: 088b43f6db691cf459684d5e093c04c3,
