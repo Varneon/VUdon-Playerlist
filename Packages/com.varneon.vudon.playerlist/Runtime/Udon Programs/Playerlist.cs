@@ -30,6 +30,9 @@ namespace Varneon.VUdon.Playerlist
 
         [FoldoutHeader("References")]
         [SerializeField, FieldNullWarning(true)]
+        internal RectTransform windowRoot;
+
+        [SerializeField, FieldNullWarning(true)]
         private GameObject playerListItem;
 
         [SerializeField, FieldNullWarning(true)]
