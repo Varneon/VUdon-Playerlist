@@ -34,6 +34,9 @@ namespace Varneon.VUdon.Playerlist
         private GameObject roleListItem;
 
         [SerializeField, FieldNullWarning(true)]
+        private GameObject roleListIconItem;
+
+        [SerializeField, FieldNullWarning(true)]
         private RectTransform listRoot;
 
         [SerializeField, FieldNullWarning(true)]
@@ -253,6 +256,29 @@ namespace Varneon.VUdon.Playerlist
             newRoleItem.GetComponent<Image>().color = color;
 
             newRoleItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = name;
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(roleContainer);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Try to add a role to a player
+        /// </summary>
+        /// <param name="playerId">The ID of the player</param>
+        /// <param name="icon">Icon of the role</param>
+        /// <returns>Does the player exist</returns>
+        [PublicAPI]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Prevent a method from being called over the network.")]
+        public bool _TryAddRoleToPlayer(int playerId, Sprite icon)
+        {
+            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { return false; }
+
+            RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
+
+            GameObject newRoleItem = Instantiate(roleListIconItem, roleContainer, false);
+
+            newRoleItem.GetComponent<Image>().sprite = icon;
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(roleContainer);
 
