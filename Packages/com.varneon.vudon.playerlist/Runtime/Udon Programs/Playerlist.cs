@@ -1,11 +1,9 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using TMPro;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Varneon.VUdon.Editors;
 using VRC.SDK3.Data;
@@ -52,9 +50,6 @@ namespace Varneon.VUdon.Playerlist
         [UdonSynced]
         private long instanceStartTime;
 
-        // Experimental instance data for keeping track of all players
-        //private DataDictionary instanceData = new DataDictionary();
-
         private long utcNow;
 
         private long localJoinTime = 0;
@@ -71,7 +66,9 @@ namespace Varneon.VUdon.Playerlist
 
         private int lastMasterId;
 
+#pragma warning disable IDE0090 // Use 'new(...)'
         private readonly DataDictionary playerData = new DataDictionary();
+#pragma warning restore IDE0090 // Use 'new(...)'
         #endregion
 
         private void Start()
@@ -169,7 +166,7 @@ namespace Varneon.VUdon.Playerlist
 
         private bool TryGetPlayerItem(int id, out Transform item)
         {
-            if (playerData.TryGetValue(id.ToString(), TokenType.Reference, out DataToken itemToken))
+            if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
             {
                 item = (Transform)itemToken.Reference;
 
@@ -186,58 +183,62 @@ namespace Varneon.VUdon.Playerlist
             return string.Concat("<color=#80C4FF><size=10>", isMaster ? "MASTER" : " ", "</size></color>\n", id, "\n<color=#80C4FF><size=10>", isLocal ? "YOU" : " ", "</size></color>");
         }
 
-        public override void OnPlayerJoined(VRCPlayerApi player)
+        private bool TryValidatePlayer(VRCPlayerApi player, out int playerId)
         {
-            GameObject newPlayerListItem = Instantiate(playerListItem, listRoot, false);
+            if (Utilities.IsValid(player)) { playerId = player.playerId; return true; }
 
-            int playerId = player.playerId;
+            playerId = -1;
+
+            return false;
+        }
+
+        private void TryAddPlayer(int playerId)
+        {
+            if (playerData.ContainsKey(playerId)) { return; }
+
+            AddPlayer(VRCPlayerApi.GetPlayerById(playerId));
+        }
+
+        private void AddPlayer(VRCPlayerApi player)
+        {
+            if (!TryValidatePlayer(player, out int playerId)) { return; }
+
+            if (playerData.ContainsKey(player.playerId)) { return; }
+
+            GameObject newPlayerListItem = Instantiate(playerListItem, listRoot, false);
 
             TextMeshProUGUI[] texts = newPlayerListItem.GetComponentsInChildren<TextMeshProUGUI>(true);
 
             texts[0].text = GetFormattedIdText(playerId, player.isMaster, player.isLocal);
             texts[1].text = player.displayName;
 
-            if(Networking.LocalPlayer.playerId <= player.playerId)
+            if (Networking.LocalPlayer.playerId <= player.playerId)
             {
                 texts[3].text = DateTime.UtcNow.ToLocalTime().ToString("ddd, h:mm tt");
             }
 
-            playerData.Add(player.playerId.ToString(), newPlayerListItem.transform);
+            playerData.Add(player.playerId, newPlayerListItem.transform);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listRoot);
-
-//            if (Networking.IsOwner(gameObject))
-//            {
-//                DataDictionary container = new DataDictionary();
-
-//#pragma warning disable IDE0028 // UdonSharp does not support initializer lists yet
-//                container.Add("joined", DateTime.UtcNow.ToFileTime());
-//#pragma warning restore IDE0028
-
-//                instanceData.Add(player.playerId.ToString(), container);
-
-//                Debug.Log(instanceData.ToString());
-
-//                if (VRCJson.TrySerializeToJson(instanceData, JsonExportType.Beautify, out DataToken instanceDataOutput))
-//                {
-//                    Debug.Log(instanceDataOutput);
-//                }
-//            }
 
             UpdatePlayerInfo(playerId);
         }
 
-        public override void OnPlayerLeft(VRCPlayerApi player)
+        private void RemovePlayer(VRCPlayerApi player)
         {
-            if (Utilities.IsValid(player) && TryGetPlayerItem(player.playerId, out Transform item))
+            if(TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out Transform item))
             {
-                playerData.Remove(player.playerId);
+                playerData.Remove(playerId);
 
                 Destroy(item.gameObject);
             }
 
             SendCustomEventDelayedFrames(nameof(_UpdatePlayerInfoDelayed), 0);
         }
+
+        public override void OnPlayerJoined(VRCPlayerApi player) { AddPlayer(player); }
+
+        public override void OnPlayerLeft(VRCPlayerApi player) { RemovePlayer(player); }
         #endregion
 
         #region Public API
@@ -252,7 +253,9 @@ namespace Varneon.VUdon.Playerlist
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Prevent a method from being called over the network.")]
         public bool _TryAddRoleToPlayer(int playerId, string name, Color color)
         {
-            if(!TryGetPlayerItem(playerId, out Transform playerItem)) { return false; }
+            TryAddPlayer(playerId);
+
+            if(!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
 
@@ -277,7 +280,9 @@ namespace Varneon.VUdon.Playerlist
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Prevent a method from being called over the network.")]
         public bool _TryAddRoleToPlayer(int playerId, Sprite icon)
         {
-            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { return false; }
+            TryAddPlayer(playerId);
+
+            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
 
@@ -300,7 +305,9 @@ namespace Varneon.VUdon.Playerlist
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Prevent a method from being called over the network.")]
         public bool _TrySetPlayerStatus(int playerId, string status)
         {
-            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { return false; }
+            TryAddPlayer(playerId);
+
+            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             playerItem.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = status;
 
