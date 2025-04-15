@@ -307,20 +307,5 @@ namespace Varneon.VUdon.Playerlist
             return true;
         }
         #endregion
-
-#if UNITY_EDITOR && !COMPILER_UDONSHARP
-        [UsedImplicitly]
-        [UnityEditor.Callbacks.PostProcessScene(-1)]
-        private static void PostProcessPlayerlistsOnBuild()
-        {
-            foreach(Playerlist playerlist in SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Playerlist>(true)))
-            {
-                for(int i = playerlist.listRoot.childCount - 1; i >= 0; i--)
-                {
-                    DestroyImmediate(playerlist.listRoot.GetChild(i).gameObject);
-                }
-            }
-        }
-#endif
     }
 }
