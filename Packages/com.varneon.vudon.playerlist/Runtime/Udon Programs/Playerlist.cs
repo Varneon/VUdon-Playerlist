@@ -241,6 +241,14 @@ namespace Varneon.VUdon.Playerlist
         public override void OnPlayerLeft(VRCPlayerApi player) { RemovePlayer(player); }
         #endregion
 
+        #region Hierarchy Accessors
+        private Transform GetListItemHighlight(Transform listItem) { return listItem.GetChild(1).GetChild(0); }
+
+        private Transform GetListItemRoleContainer(Transform listItem) { return listItem.GetChild(1).GetChild(4); }
+
+        private TextMeshProUGUI GetListItemStatusText(Transform listItem) { return listItem.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>(); }
+        #endregion
+
         #region Public API
         /// <summary>
         /// Try to add a role to a player
@@ -257,7 +265,7 @@ namespace Varneon.VUdon.Playerlist
 
             if(!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
-            RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
+            RectTransform roleContainer = (RectTransform)GetListItemRoleContainer(playerItem);
 
             GameObject newRoleItem = Instantiate(roleListItem, roleContainer, false);
 
@@ -284,7 +292,7 @@ namespace Varneon.VUdon.Playerlist
 
             if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
-            RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
+            RectTransform roleContainer = (RectTransform)GetListItemRoleContainer(playerItem);
 
             GameObject newRoleItem = Instantiate(roleListIconItem, roleContainer, false);
 
@@ -309,7 +317,7 @@ namespace Varneon.VUdon.Playerlist
 
             if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
-            playerItem.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = status;
+            GetListItemStatusText(playerItem).text = status;
 
             return true;
         }
