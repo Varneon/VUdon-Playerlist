@@ -156,7 +156,7 @@ namespace Varneon.VUdon.Playerlist
 
             int playerId = master.playerId;
 
-            if (lastMasterId != playerId && TryGetPlayerItem(playerId, out Transform item))
+            if (lastMasterId != playerId && TryGetPlayerItem(playerId, out RectTransform item))
             {
                 item.GetComponentInChildren<TextMeshProUGUI>(true).text = GetFormattedIdText(playerId, true, master.isLocal);
 
@@ -164,11 +164,11 @@ namespace Varneon.VUdon.Playerlist
             }
         }
 
-        private bool TryGetPlayerItem(int id, out Transform item)
+        private bool TryGetPlayerItem(int id, out RectTransform item)
         {
             if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
             {
-                item = (Transform)itemToken.Reference;
+                item = (RectTransform)itemToken.Reference;
 
                 return true;
             }
@@ -226,7 +226,7 @@ namespace Varneon.VUdon.Playerlist
 
         private void RemovePlayer(VRCPlayerApi player)
         {
-            if(TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out Transform item))
+            if(TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out RectTransform item))
             {
                 playerData.Remove(playerId);
 
@@ -255,7 +255,7 @@ namespace Varneon.VUdon.Playerlist
         {
             TryAddPlayer(playerId);
 
-            if(!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
+            if(!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
 
@@ -282,7 +282,7 @@ namespace Varneon.VUdon.Playerlist
         {
             TryAddPlayer(playerId);
 
-            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
+            if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)playerItem.GetChild(1).GetChild(3);
 
@@ -307,7 +307,7 @@ namespace Varneon.VUdon.Playerlist
         {
             TryAddPlayer(playerId);
 
-            if (!TryGetPlayerItem(playerId, out Transform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
+            if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             playerItem.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = status;
 
