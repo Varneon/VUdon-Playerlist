@@ -209,6 +209,8 @@ namespace Varneon.VUdon.Playerlist
 
             TextMeshProUGUI[] texts = newPlayerListItem.GetComponentsInChildren<TextMeshProUGUI>(true);
 
+            bool isLocalPlayer = player.isLocal;
+
             texts[0].text = GetFormattedIdText(playerId, player.isMaster, player.isLocal);
             texts[1].text = player.displayName;
 
@@ -217,7 +219,9 @@ namespace Varneon.VUdon.Playerlist
                 texts[3].text = DateTime.UtcNow.ToLocalTime().ToString("ddd, h:mm tt");
             }
 
-            playerData.Add(player.playerId, newPlayerListItem.transform);
+            if (isLocalPlayer) { GetListItemHighlight(newPlayerListItem.transform).gameObject.SetActive(true); }
+
+            playerData.Add(player.playerId, (RectTransform)newPlayerListItem.transform);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listRoot);
 
