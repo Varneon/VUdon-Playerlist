@@ -2,8 +2,8 @@
   "name": "com.varneon.vudon.playerlist",
   "version": "0.1.0-alpha.6",
   "displayName": "VUdon - Playerlist",
-  "unity": "2019.4",
-  "unityRelease": "29f1",
+  "unity": "2022.3",
+  "unityRelease": "22f1",
   "author": {
     "name": "Varneon",
     "url": "https://github.com/Varneon"
