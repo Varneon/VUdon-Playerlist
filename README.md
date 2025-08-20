@@ -6,6 +6,8 @@
 
 Playerlist prefab for VRChat worlds that displays all users in the instance and information about them.
 
+<img width="1920" height="1080" alt="Banner_VUdon_Playerlist_2025_1_FHD" src="https://github.com/user-attachments/assets/c3d810ae-9ccf-41fd-b964-9a08b1aafbd3" />
+
 # Installation
 
 <details><summary>
