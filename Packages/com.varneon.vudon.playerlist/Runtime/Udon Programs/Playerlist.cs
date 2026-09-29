@@ -164,7 +164,7 @@ namespace Varneon.VUdon.Playerlist
             }
         }
 
-        private bool TryGetPlayerItem(int id, out RectTransform item)
+        public bool TryGetPlayerItem(int id, out RectTransform item)
         {
             if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
             {
