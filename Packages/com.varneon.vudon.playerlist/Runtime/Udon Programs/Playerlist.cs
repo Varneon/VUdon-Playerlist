@@ -226,6 +226,7 @@ namespace Varneon.VUdon.Playerlist
             if (isLocalPlayer) { GetListItemHighlight(newPlayerListItem.transform).gameObject.SetActive(true); }
 
             playerData.Add(player.playerId, (RectTransform)newPlayerListItem.transform);
+            playerData.Add((RectTransform)newPlayerListItem.transform, player.playerId);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listRoot);
 
@@ -234,8 +235,9 @@ namespace Varneon.VUdon.Playerlist
 
         private void RemovePlayer(VRCPlayerApi player)
         {
-            if(TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out RectTransform item))
+            if (TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out RectTransform item))
             {
+                playerData.Remove(item);
                 playerData.Remove(playerId);
 
                 Destroy(item.gameObject);
@@ -271,7 +273,7 @@ namespace Varneon.VUdon.Playerlist
         {
             TryAddPlayer(playerId);
 
-            if(!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
+            if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)GetListItemRoleContainer(playerItem);
 
@@ -328,6 +330,22 @@ namespace Varneon.VUdon.Playerlist
             GetListItemStatusText(playerItem).text = status;
 
             return true;
+        }
+
+        /// <summary>
+        /// Gets the player's ID from a list item
+        /// </summary>
+        /// <param name="itemRoot">Existing list item from the playerlist fetched using <see cref="TryGetPlayerItem"/></param>
+        /// <returns><see cref="VRCPlayerApi.playerId"/></returns>
+        [PublicAPI]
+        public int GetPlayerListItemIndex(RectTransform itemRoot)
+        {
+            if (playerData.TryGetValue(itemRoot, out DataToken value))
+            {
+                return value.Int;
+            }
+
+            return -1;
         }
         #endregion
     }
