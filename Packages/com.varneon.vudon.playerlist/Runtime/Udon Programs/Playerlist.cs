@@ -166,22 +166,6 @@ namespace Varneon.VUdon.Playerlist
             }
         }
 
-        public bool TryGetPlayerItem(int id, out RectTransform item)
-        {
-            TryAddPlayer(id);
-
-            if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
-            {
-                item = (RectTransform)itemToken.Reference;
-
-                return true;
-            }
-
-            item = null;
-
-            return false;
-        }
-
         private string GetFormattedIdText(int id, bool isMaster, bool isLocal)
         {
             return string.Concat("<color=#80C4FF><size=10>", isMaster ? "MASTER" : " ", "</size></color>\n", id, "\n<color=#80C4FF><size=10>", isLocal ? "YOU" : " ", "</size></color>");
@@ -330,6 +314,30 @@ namespace Varneon.VUdon.Playerlist
             GetListItemStatusText(playerItem).text = status;
 
             return true;
+        }
+
+        /// <summary>
+        /// Gets a player's list item based on their ID
+        /// </summary>
+        /// <param name="id"><see cref="VRCPlayerApi.playerId"/></param>
+        /// <param name="item">Player's item from the list</param>
+        /// <returns>Was the player list item fetched successfully</returns>
+        [PublicAPI]
+        public bool TryGetPlayerItem(int id, out RectTransform item)
+        {
+            // Ensure the player has been registered in case this method is called before the playlist has processed them
+            TryAddPlayer(id);
+
+            if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
+            {
+                item = (RectTransform)itemToken.Reference;
+
+                return true;
+            }
+
+            item = null;
+
+            return false;
         }
 
         /// <summary>
