@@ -152,7 +152,9 @@ namespace Varneon.VUdon.Playerlist
 
         private void UpdateInstanceMaster()
         {
-            VRCPlayerApi master = Networking.GetOwner(gameObject);
+            VRCPlayerApi master = Networking.Master;
+
+            if (master == null) { return; }
 
             int playerId = master.playerId;
 
