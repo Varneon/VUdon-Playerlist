@@ -2,7 +2,8 @@
     "name": "Varneon.VUdon.Playerlist.Editor",
     "references": [
         "Varneon.VUdon.Playerlist.Runtime",
-        "Varneon.VUdon.Editors.Editor"
+        "Varneon.VUdon.Editors.Editor",
+        "UdonSharp.Runtime"
     ],
     "includePlatforms": [
         "Editor"
