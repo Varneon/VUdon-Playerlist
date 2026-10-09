@@ -1,6 +1,6 @@
 {
   "name": "com.varneon.vudon.playerlist",
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "displayName": "VUdon - Playerlist",
   "unity": "2022.3",
   "unityRelease": "22f1",
@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "com.vrchat.worlds": "3.7.4",
-    "com.varneon.vudon.editors": "0.1.0"
+    "com.varneon.vudon.editors": "0.2.0"
   },
   "vpmDependencies": {
     "com.vrchat.worlds": ">=3.7.4 <4.0.0",
-    "com.varneon.vudon.editors": "0.1.0-alpha.8"
+    "com.varneon.vudon.editors": ">=0.2.0-alpha.2 <0.3.0"
   },
   "description": "Playerlist prefab for VRChat worlds that displays all users in the instance and information about them."
 }
