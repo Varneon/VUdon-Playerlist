@@ -152,7 +152,9 @@ namespace Varneon.VUdon.Playerlist
 
         private void UpdateInstanceMaster()
         {
-            VRCPlayerApi master = Networking.GetOwner(gameObject);
+            VRCPlayerApi master = Networking.Master;
+
+            if (master == null) { return; }
 
             int playerId = master.playerId;
 
@@ -162,20 +164,6 @@ namespace Varneon.VUdon.Playerlist
 
                 lastMasterId = playerId;
             }
-        }
-
-        private bool TryGetPlayerItem(int id, out RectTransform item)
-        {
-            if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
-            {
-                item = (RectTransform)itemToken.Reference;
-
-                return true;
-            }
-
-            item = null;
-
-            return false;
         }
 
         private string GetFormattedIdText(int id, bool isMaster, bool isLocal)
@@ -222,6 +210,7 @@ namespace Varneon.VUdon.Playerlist
             if (isLocalPlayer) { GetListItemHighlight(newPlayerListItem.transform).gameObject.SetActive(true); }
 
             playerData.Add(player.playerId, (RectTransform)newPlayerListItem.transform);
+            playerData.Add((RectTransform)newPlayerListItem.transform, player.playerId);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listRoot);
 
@@ -230,8 +219,9 @@ namespace Varneon.VUdon.Playerlist
 
         private void RemovePlayer(VRCPlayerApi player)
         {
-            if(TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out RectTransform item))
+            if (TryValidatePlayer(player, out int playerId) && TryGetPlayerItem(player.playerId, out RectTransform item))
             {
+                playerData.Remove(item);
                 playerData.Remove(playerId);
 
                 Destroy(item.gameObject);
@@ -267,7 +257,7 @@ namespace Varneon.VUdon.Playerlist
         {
             TryAddPlayer(playerId);
 
-            if(!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
+            if (!TryGetPlayerItem(playerId, out RectTransform playerItem)) { Debug.LogError("Couldn't get player item!"); return false; }
 
             RectTransform roleContainer = (RectTransform)GetListItemRoleContainer(playerItem);
 
@@ -324,6 +314,46 @@ namespace Varneon.VUdon.Playerlist
             GetListItemStatusText(playerItem).text = status;
 
             return true;
+        }
+
+        /// <summary>
+        /// Gets a player's list item based on their ID
+        /// </summary>
+        /// <param name="id"><see cref="VRCPlayerApi.playerId"/></param>
+        /// <param name="item">Player's item from the list</param>
+        /// <returns>Was the player list item fetched successfully</returns>
+        [PublicAPI]
+        public bool TryGetPlayerItem(int id, out RectTransform item)
+        {
+            // Ensure the player has been registered in case this method is called before the playlist has processed them
+            TryAddPlayer(id);
+
+            if (playerData.TryGetValue(id, TokenType.Reference, out DataToken itemToken))
+            {
+                item = (RectTransform)itemToken.Reference;
+
+                return true;
+            }
+
+            item = null;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the player's ID from a list item
+        /// </summary>
+        /// <param name="itemRoot">Existing list item from the playerlist fetched using <see cref="TryGetPlayerItem"/></param>
+        /// <returns><see cref="VRCPlayerApi.playerId"/></returns>
+        [PublicAPI]
+        public int GetPlayerListItemIndex(RectTransform itemRoot)
+        {
+            if (playerData.TryGetValue(itemRoot, out DataToken value))
+            {
+                return value.Int;
+            }
+
+            return -1;
         }
         #endregion
     }
